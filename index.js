@@ -31,7 +31,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 
   if (msg === '!np') {
     // "Now playing" command
-    fs.readFile(config.npFile, 'utf8', (err, data) => {
+    fs.readFile(config.commands.npFile, 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         return;
@@ -43,7 +43,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 
   if (msg === '!skin') {
     // Link to my current skin
-    client.say(target, `Current skin: ${config.skinUrl}`);
+    client.say(target, `Current skin: ${config.commands.skin}`);
   }
 
   if (msg === '!uptime') {
@@ -76,6 +76,26 @@ const onMessageHandler = (target, context, message, fromSelf) => {
         client.say(target, `Uptime: ${uptimeHours} hours, ${uptimeMinutes} minutes!`);
       })
       .catch(console.error);
+  }
+
+  if (msg === '!area') {
+    // Send tablet area
+    client.say(target, `Tablet area: ${config.commands.area}`);
+  }
+
+  if (msg === '!tablet') {
+    // Send tablet information
+    client.say(target, `Tablet: ${config.commands.tablet}`);
+  }
+
+  if (msg === '!keyboard') {
+    // Send keyboard information
+    client.say(target, `Keyboard: ${config.commands.keyboard}`);
+  }
+
+  if (msg === '!grip') {
+    // Send tablet grip information
+    client.say(target, `Tablet pen grip: ${config.commands.grip}`);
   }
 };
 

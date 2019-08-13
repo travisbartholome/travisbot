@@ -13,6 +13,12 @@ module.exports = {
   apiClientId: 'API_CLIENT_ID', // Removed for security
 
   // Command-specific config info
-  npFile: 'D:\\Programs\\StreamCompanion\\Files\\np_stream_command.txt',
-  skinUrl: 'https://drive.google.com/file/d/1UQCSVK0M36nn4LN8x_vUHECSDNVuZ8Up/view',
+  commands: {
+    npFile: 'D:\\Programs\\StreamCompanion\\Files\\np_stream_command.txt',
+    skinUrl: 'https://drive.google.com/file/d/1UQCSVK0M36nn4LN8x_vUHECSDNVuZ8Up/view',
+    area: 'https://imgur.com/a/coHBAPE',
+    tablet: 'XP-Pen G430S',
+    keyboard: 'Cooler Master MK750 (red switches)',
+    grip: 'https://imgur.com/a/jjmq6kT',
+  },
 };
