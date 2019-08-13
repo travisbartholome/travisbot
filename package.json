@@ -1,0 +1,19 @@
+{
+  "name": "travis_bot",
+  "version": "1.0.0",
+  "description": "Twitch bot created by/for travis_ba",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/travisbartholome/travisbot.git"
+  },
+  "author": "travisbartholome",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/travisbartholome/travisbot/issues"
+  },
+  "homepage": "https://github.com/travisbartholome/travisbot#readme"
+}
