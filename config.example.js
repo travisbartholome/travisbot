@@ -9,6 +9,9 @@ module.exports = {
     ],
   },
 
+  // API client ID
+  apiClientId: 'API_CLIENT_ID', // Removed for security
+
   // Command-specific config info
   npFile: 'D:\\Programs\\StreamCompanion\\Files\\np_stream_command.txt',
   skinUrl: 'https://drive.google.com/file/d/1UQCSVK0M36nn4LN8x_vUHECSDNVuZ8Up/view',
