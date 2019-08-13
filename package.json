@@ -4,7 +4,10 @@
   "description": "Twitch bot created by/for travis_ba",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,13 @@
   "bugs": {
     "url": "https://github.com/travisbartholome/travisbot/issues"
   },
-  "homepage": "https://github.com/travisbartholome/travisbot#readme"
+  "homepage": "https://github.com/travisbartholome/travisbot#readme",
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  },
+  "dependencies": {
+    "tmi.js": "^1.4.5"
+  }
 }
