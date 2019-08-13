@@ -10,7 +10,6 @@ const config = require('./config');
 const client = new tmi.Client(config.tmiOptions);
 
 // Define handler for the 'connected' event
-
 const onConnectedHandler = (address, port) => {
   console.log(`Connected to ${address}:${port}`);
 };
@@ -129,6 +128,11 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   if (msg === '!grip') {
     // Send tablet grip information
     client.say(target, `Tablet pen grip: ${config.commands.grip}`);
+  }
+
+  if (msg === '!commands') {
+    // Send the list of available commands
+    client.say(target, `Command list: ${config.commands.commandList}`);
   }
 };
 

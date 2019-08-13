@@ -2,11 +2,12 @@
 
 Command   | Description
 :--------:|:-----------:
-!ping	    | Check if the bot is available.
-!np       | Get the link and details for the current map.
-!skin     | Get a link to my current skin.
-!uptime   | See how long the stream has been live.
 !area     | Shows the tablet area.
-!tablet   | Shows the tablet model.
-!keyboard | Shows the keyboard model.
+!commands | Shows the list of available commands.
 !grip     | Shows my tablet pen grip.
+!keyboard | Shows the keyboard model.
+!np       | Get the link and details for the current map.
+!ping	    | Check if the bot is available.
+!skin     | Get a link to my current skin.
+!tablet   | Shows the tablet model.
+!uptime   | See how long the stream has been live.
