@@ -30,7 +30,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     client.say(target, `@${context.username} Pong!`);
   }
 
-  if (msg === '!np') {
+  if (msg === '!np' || msg === '!map') {
     // "Now playing" command
     fs.readFile(config.commands.npFile, 'utf8', (err, data) => {
       if (err) {
