@@ -9,13 +9,17 @@ module.exports = {
     ],
   },
 
-  // API client ID
+  // Twitch API client ID
   apiClientId: 'API_CLIENT_ID', // Removed for security
+
+  // Path to osu! config file
+  osuConfigFilePath: 'CONFIG_PATH', // Removed
 
   // Command-specific config info
   commands: {
     npFile: 'D:\\Programs\\StreamCompanion\\Files\\np_stream_command.txt',
-    skinUrl: 'https://drive.google.com/file/d/1UQCSVK0M36nn4LN8x_vUHECSDNVuZ8Up/view',
+    skin: 'https://drive.google.com/file/d/1UQCSVK0M36nn4LN8x_vUHECSDNVuZ8Up/view',
+    skinDefaultName: 'Seoul.v9 MPikazo',
     area: 'https://imgur.com/a/coHBAPE',
     tablet: 'XP-Pen G430S',
     keyboard: 'Cooler Master MK750 (red switches)',

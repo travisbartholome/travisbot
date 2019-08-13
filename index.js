@@ -1,4 +1,6 @@
 const fs = require('fs');
+const readline = require('readline');
+
 const tmi = require('tmi.js');
 const request = require('request-promise-native');
 
@@ -43,7 +45,38 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 
   if (msg === '!skin') {
     // Link to my current skin
-    client.say(target, `Current skin: ${config.commands.skin}`);
+    const { skin, skinDefaultName } = config.commands;
+    const skinConfigPrefix = 'Skin = ';
+
+    let skinMsg = `Usual skin: ${skin}`;
+
+    if (config.osuConfigFilePath) {
+      // If the skin in use on stream isn't the one typically in use,
+      // the bot can make a note of that as well
+      // Reads the osu! config file to see what skin is currently in use
+      const cfgReadLine = readline.createInterface({
+        input: fs.createReadStream(config.osuConfigFilePath),
+      });
+
+      cfgReadLine.on('line', (line) => {
+        if (line.startsWith(skinConfigPrefix)) {
+          const currentSkinName = line.slice(skinConfigPrefix.length);
+
+          // If the user specifies a "default" skin name, the bot won't
+          // bother printing the current in-use skin when it has the same
+          // name as the default
+          if (!skinDefaultName || currentSkinName !== skinDefaultName) {
+            skinMsg += ` (currently using: ${currentSkinName})`;
+          }
+        }
+      });
+
+      cfgReadLine.on('close', () => {
+        client.say(target, skinMsg);
+      });
+    } else {
+      client.say(target, skinMsg);
+    }
   }
 
   if (msg === '!uptime') {
