@@ -8,17 +8,23 @@ Set up a file named `config.js` in the root directory, with the following struct
 
 ```javascript
 module.exports = {
-  identity: {
-    username: BOT_USERNAME,
-    password: OAUTH_TOKEN
+  tmiOptions: {
+    identity: {
+      username: BOT_USERNAME,
+      password: OAUTH_TOKEN,
+    },
+    channels: [
+      CHANNEL_NAME,
+    ],
   },
-  channels: [
-    CHANNEL_NAME
-  ]
+  npFilePath: NOW_PLAYING_FILE_PATH,
+  skinUrl: SKIN_URL,
 };
 ```
 
-See [this link](https://dev.twitch.tv/docs/irc/) for variable descriptions.
-The structure of the config object is the same.
+See [this link](https://dev.twitch.tv/docs/irc/) for descriptions of the variables in the `tmiOptions` object.
+The structure of `tmiOptions` should match the config object in the example.
+
+An example config file, with sensitive information removed, can be found at [config.example.js](./config.example.js).
 
 Run the bot using `node index.js`, or by running `npm start` in the repository's root directory.
