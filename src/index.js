@@ -4,7 +4,9 @@ const readline = require('readline');
 const tmi = require('tmi.js');
 const request = require('request-promise-native');
 
-const config = require('./config');
+const getFollowage = require('./commands/followage');
+
+const config = require('../config');
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -17,12 +19,22 @@ const onConnectedHandler = (address, port) => {
 // Define message handler
 const onMessageHandler = (target, context, message, fromSelf) => {
   // Bot should ignore messages from itself
-  if (fromSelf) return;
+  if (fromSelf) {
+    return;
+  }
 
   // Remove whitespace from message
   const msg = message.trim();
   const channelName = target.slice(1);
   const channelId = context['room-id'];
+
+  // Common options for Twitch API calls
+  const twitchApiOptions = {
+    headers: {
+      'Client-ID': config.apiClientId,
+    },
+    json: true,
+  };
 
   // Parse commands
   if (msg === '!ping') {
@@ -80,15 +92,10 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 
   if (msg === '!uptime') {
     // Display stream uptime (fetched from the Twitch API)
-    const options = {
+    request({
+      ...twitchApiOptions,
       uri: `https://api.twitch.tv/helix/streams?user_id=${channelId}&first=1`,
-      headers: {
-        'Client-ID': config.apiClientId,
-      },
-      json: true,
-    };
-
-    request(options)
+    })
       .then((result) => {
         // If the user is offline, the Twitch API won't return data for their stream
         if (!result.data || result.data.length === 0) {
@@ -133,6 +140,29 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   if (msg === '!commands') {
     // Send the list of available commands
     client.say(target, `Command list: ${config.commands.commandList}`);
+  }
+
+  if (msg === '!discord') {
+    // Send a Discord server invite
+    client.say(target, `Discord: ${config.commands.discord}`);
+  }
+
+  if (msg === '!youtube') {
+    // Send a YouTube channel link
+    client.say(target, `YouTube channel: ${config.commands.youtube}`);
+  }
+
+  if (msg === '!followage') {
+    // Calculate how long the sender has been following the channel
+    const fromUser = context['user-id'];
+    const fromDisplayName = context['display-name'];
+    const toUser = context['room-id'];
+
+    getFollowage(fromUser, fromDisplayName, toUser, twitchApiOptions)
+      .then((followageMsg) => {
+        client.say(target, followageMsg);
+      })
+      .catch(console.error);
   }
 };
 

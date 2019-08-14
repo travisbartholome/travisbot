@@ -22,4 +22,4 @@ See [this link](https://dev.twitch.tv/docs/api/) for information about the `apiC
 as well as how to acquire one of these keys.
 This is used to make requests to the Twitch API for things like stream uptime.
 
-Run the bot using `node index.js`, or by running `npm start` in the repository's root directory.
+Run the bot by running `npm start` or `node ./src/index.js` in the repository's root directory.
