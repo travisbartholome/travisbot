@@ -7,6 +7,8 @@ const request = require('request-promise-native');
 const getFollowage = require('./commands/followage');
 
 const config = require('../config');
+const cmdPrefix = config.cmdPrefix;
+
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -37,12 +39,12 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   };
 
   // Parse commands
-  if (msg === '!ping') {
+  if (msg ===  `${cmdPrefix}` + 'ping') {
     // Check to see if the bot is running/connected
     client.say(target, `@${context.username} Pong!`);
   }
 
-  if (msg === '!np' || msg === '!map') {
+  if (msg === `${cmdPrefix}` + 'np' || msg === `${cmdPrefix}` + 'map') {
     // "Now playing" command
     fs.readFile(config.commands.npFile, 'utf8', (err, data) => {
       if (err) {
@@ -54,7 +56,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     });
   }
 
-  if (msg === '!skin') {
+  if (msg === `${cmdPrefix}` + 'skin') {
     // Link to my current skin
     const { skin, skinDefaultName } = config.commands;
     const skinConfigPrefix = 'Skin = ';
@@ -90,7 +92,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     }
   }
 
-  if (msg === '!uptime') {
+  if (msg === `${cmdPrefix}` + 'uptime') {
     // Display stream uptime (fetched from the Twitch API)
     request({
       ...twitchApiOptions,
@@ -117,42 +119,42 @@ const onMessageHandler = (target, context, message, fromSelf) => {
       .catch(console.error);
   }
 
-  if (msg === '!area') {
+  if (msg === `${cmdPrefix}` + 'area') {
     // Send tablet area
     client.say(target, `Tablet area: ${config.commands.area}`);
   }
 
-  if (msg === '!tablet') {
+  if (msg === `${cmdPrefix}` + 'tablet') {
     // Send tablet information
     client.say(target, `Tablet: ${config.commands.tablet}`);
   }
 
-  if (msg === '!keyboard') {
+  if (msg === `${cmdPrefix}` + 'keyboard') {
     // Send keyboard information
     client.say(target, `Keyboard: ${config.commands.keyboard}`);
   }
 
-  if (msg === '!grip') {
+  if (msg === `${cmdPrefix}` + 'grip') {
     // Send tablet grip information
     client.say(target, `Tablet pen grip: ${config.commands.grip}`);
   }
 
-  if (msg === '!commands') {
+  if (msg === `${cmdPrefix}` + 'commands') {
     // Send the list of available commands
     client.say(target, `Command list: ${config.commands.commandList}`);
   }
 
-  if (msg === '!discord') {
+  if (msg === `${cmdPrefix}` + 'discord') {
     // Send a Discord server invite
     client.say(target, `Discord: ${config.commands.discord}`);
   }
 
-  if (msg === '!youtube') {
+  if (msg === `${cmdPrefix}` + 'youtube') {
     // Send a YouTube channel link
     client.say(target, `YouTube channel: ${config.commands.youtube}`);
   }
 
-  if (msg === '!followage') {
+  if (msg === `${cmdPrefix}` + 'followage') {
     // Calculate how long the sender has been following the channel
     const fromUser = context['user-id'];
     const fromDisplayName = context['display-name'];
