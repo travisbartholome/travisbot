@@ -20,9 +20,8 @@ module.exports = {
 
   // Command-specific config info
   commands: {
-    area: 'https://imgur.com/a/coHBAPE',
-    areaPath: '/path/to/hawku/driver/TabletDriverV0.2.3/config', // Path to the "config" folder your instance of Hawku Driver, where a config.xml file lives. 
-                                                                 // Do not keep a slash at the end of the path
+    area: null, // Leave null unless you don't use Hawku, or want to manually insert something - eg: 'https://imgur.com/a/coHBAPE'
+    hawkuPath: '/mnt/c/path/to/Hawku/TabletDriverV0.2.3/config', // do not keep a slash at the end of the path
     commandList: 'https://travisbartholome.github.io/travisbot/',
     discord: 'https://discord.gg/ppy',
     grip: 'https://imgur.com/a/jjmq6kT',
