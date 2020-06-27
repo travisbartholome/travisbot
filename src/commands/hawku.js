@@ -1,6 +1,6 @@
 const fs = require('fs');
 const config = require('../../config');
-const hawkuConfigFilePath = config.commands.areaPath + '/config.xml'
+const hawkuConfigFilePath = config.commands.hawkuPath
 const convert = require('xml-js');
 
 const options = {compact: true, ignoreDeclaration: true, ignoreAttributes: true, nativeTypeAttributes: true};
