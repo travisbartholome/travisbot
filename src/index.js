@@ -121,48 +121,54 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   }
   
   if (msg === `${cmdPrefix}` + 'area') {
-    const hawkuDetails = hawku.GetDetails();
-    const tabletArea = hawku.GetAreas();
-    let w = tabletArea.width; let h = tabletArea.height; let mw = tabletArea.maxwidth; let mh = tabletArea.maxheight;
-    let ar = hawkuDetails.forcedAspectRatio; let fullarea = hawkuDetails.fullArea;
-
-    let areaMsg = function(width,height,maxwidth,maxheight,aspectratio,fullarea) {
-      if(fullarea == 'true' && aspectratio == 'true') {
-        message = "Full area | " + `${maxwidth}mm` + " | Forced Aspect Ratio";
-        return message;
-      }
-      if(fullarea == 'true' && aspectratio == 'false') {
-        message = "Full area | " + `${width}mm x ${height}mm`
-        return message;
-      }
-      if (fullarea != 'true') {
-        if (aspectratio == 'true') {
-          message = "Width: " + width + "mm | Forced Aspect Ratio"
-          return message;
-        } else {
-          message = `Width: ${width}mm of ${maxwidth}mm, Height: ${height}mm of ${maxheight}mm`;
+    // a single area command - if the hawkuPath (in config.js) is populated, it runs like normal
+    // if there is an area manually declared, AND the path is populated, it will use the path
+    // if the area is declared, and the path is null, the static area will be used
+    if (config.commands.hawkuPath != null) {
+      const hawkuDetails = hawku.GetDetails();
+      const tabletArea = hawku.GetAreas();
+      let w = tabletArea.width; let h = tabletArea.height; let mw = tabletArea.maxwidth; let mh = tabletArea.maxheight;
+      let ar = hawkuDetails.forcedAspectRatio; let fullarea = hawkuDetails.fullArea;
+  
+      let areaMsg = function(width,height,maxwidth,maxheight,aspectratio,fullarea) {
+        if(fullarea == 'true' && aspectratio == 'true') {
+          message = "Full area | " + `${maxwidth}mm` + " | Forced Aspect Ratio";
           return message;
         }
+        if(fullarea == 'true' && aspectratio == 'false') {
+          message = "Full area | " + `${width}mm x ${height}mm`
+          return message;
+        }
+        if (fullarea != 'true') {
+          if (aspectratio == 'true') {
+            message = "Width: " + width + "mm | Forced Aspect Ratio"
+            return message;
+          } else {
+            message = `Width: ${width}mm of ${maxwidth}mm, Height: ${height}mm of ${maxheight}mm`;
+            return message;
+          }
+        }
+      }
+  
+      if (config.commands.hawkuPath) {
+        client.say(target, areaMsg(w,h,mw,mh,ar,fullarea))
       }
     }
 
-    if (config.commands.areaPath) {
-      client.say(target, areaMsg(w,h,mw,mh,ar,fullarea))
+    if (config.commands.area != null) {
+      client.say(target, `Tablet area: ${config.commands.area}`);
     }
   }
 
   if (msg === `${cmdPrefix}` + 'areadetails') {
-    const hawkuDetails = hawku.GetDetails();
-    if (hawkuDetails.outputMode) {
-      let message = `Full area: ${hawkuDetails.fullArea}, Smoothed Output: ${hawkuDetails.smoothing}, Output Mode: ${hawkuDetails.outputMode}, Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`
-      client.say(target, message);
+    if (config.commands.hawkuPath) {
+      const hawkuDetails = hawku.GetDetails();
+      if (hawkuDetails.outputMode) {
+        let message = `Full area: ${hawkuDetails.fullArea}, Smoothed Output: ${hawkuDetails.smoothing}, Output Mode: ${hawkuDetails.outputMode}, Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`
+        client.say(target, `${message}`);
+      }
     }
   }
-
-  /* if (msg === `${cmdPrefix}` + 'area') {
-    // Send tablet area
-    client.say(target, `Tablet area: ${config.commands.area}`);
-  } */
 
   if (msg === `${cmdPrefix}` + 'tablet') {
     // Send tablet information
