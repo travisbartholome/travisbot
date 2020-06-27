@@ -21,7 +21,7 @@ module.exports = {
   // Command-specific config info
   commands: {
     area: null, // Leave null unless you don't use Hawku, or want to manually insert something - eg: 'https://imgur.com/a/coHBAPE'
-    hawkuPath: '/mnt/c/path/to/Hawku/TabletDriverV0.2.3/config', // do not keep a slash at the end of the path
+    hawkuPath: '/mnt/c/path/to/Hawku/TabletDriverV0.2.3/config/config.xml', // Point this to the config.xml file inside of your hawku directory
     commandList: 'https://travisbartholome.github.io/travisbot/',
     discord: 'https://discord.gg/ppy',
     grip: 'https://imgur.com/a/jjmq6kT',
