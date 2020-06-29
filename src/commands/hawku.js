@@ -7,11 +7,10 @@ const options = {compact: true, ignoreDeclaration: true, ignoreAttributes: true,
 
 // Ran every time this command is ran, in-case the user changes their configuration
 // This loads the entire file into a JS object after converting it
-function loadConfigFile() {
-    let hawkuUserSettings = require('fs').readFileSync(hawkuConfigFilePath, 'utf8');
-    hawkuUserSettings = convert.xml2js(hawkuUserSettings, options);
-    hawkuUserSettings = hawkuUserSettings.Configuration;
-    return hawkuUserSettings;
+const loadConfigFile = () => {
+  return xml2js(
+    fs.readFileSync(hawkuConfigFilePath, 'utf8'), options
+  ).Configuration;
 }
 
 module.exports = {
