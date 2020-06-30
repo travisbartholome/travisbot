@@ -3,6 +3,7 @@
 Command     | Description
 :----------:|:-----------:
 !area       | Shows the tablet area.
+!areadetails | Shows more tablet driver settings. 
 !commands   | Shows the list of available commands.
 !discord    | Sends a link to my Discord server.
 !followage  | See how long you've been following this channel.
