@@ -29,16 +29,15 @@ module.exports = {
         return areas;
     },
 
-    GetDetails: function() {
-        let settings = loadConfigFile();
+    getDetails: () => {
+        const settings = loadConfigFile();
 
-        settings = { 
-            forcedAspectRatio: settings.ForceAspectRatio._text, 
-            fullArea: settings.ForceFullArea._text, 
+        return { 
+            forcedAspectRatio: settings.ForceAspectRatio._text === 'true', 
+            fullArea: settings.ForceFullArea._text === 'true', 
             smoothing: settings.SmoothingEnabled._text,
             outputMode: settings.OutputMode._text,
             resolution: `${settings.ScreenArea.Width._text}x${settings.ScreenArea.Height._text}`
         }
-        return settings;
     }
 };
