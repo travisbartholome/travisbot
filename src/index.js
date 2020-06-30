@@ -105,8 +105,6 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     const tabletArea = hawku.getArea();
     const {width, height, maxWidth, maxHeight} = tabletArea;
     const {forceAspectRatio, fullArea} = hawkuDetails;
-    console.log(width,maxWidth,height,maxHeight);
-    console.log(forceAspectRatio,fullArea)
 
     // message construction logic, assigns message = 'whatever'
     
