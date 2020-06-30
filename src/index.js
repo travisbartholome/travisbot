@@ -7,6 +7,9 @@ const request = require('request-promise-native');
 const getFollowage = require('./commands/followage');
 
 const config = require('../config');
+const cmdPrefix = config.cmdPrefix;
+
+const hawku = require('./commands/hawku');
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -23,8 +26,13 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     return;
   }
 
-  // Remove whitespace from message
-  const msg = message.trim();
+  // Parses received message to determine if the correct cmdPrefix is being used. 
+  // If so, it continues.
+  if (message.trim()[0] !== cmdPrefix) {
+    return;
+  }
+  const msg = message.trim().slice(1)
+
   const channelName = target.slice(1);
   const channelId = context['room-id'];
 
@@ -37,12 +45,12 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   };
 
   // Parse commands
-  if (msg === '!ping') {
+  if (msg === 'ping') {
     // Check to see if the bot is running/connected
     client.say(target, `@${context.username} Pong!`);
   }
 
-  if (msg === '!np' || msg === '!map') {
+  if (msg === 'np' || msg === 'map') {
     // "Now playing" command
     fs.readFile(config.commands.npFile, 'utf8', (err, data) => {
       if (err) {
@@ -54,7 +62,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     });
   }
 
-  if (msg === '!skin') {
+  if (msg === 'skin') {
     // Link to my current skin
     const { skin, skinDefaultName } = config.commands;
     const skinConfigPrefix = 'Skin = ';
@@ -90,7 +98,53 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     }
   }
 
-  if (msg === '!uptime') {
+  if (msg === 'area') {
+
+    let message;
+    const hawkuDetails = hawku.getDetails();
+    const tabletArea = hawku.getArea();
+    const {width, height, maxWidth, maxHeight} = tabletArea;
+    const {forceAspectRatio, fullArea} = hawkuDetails;
+
+    // message construction logic, assigns message = 'whatever'
+    
+    if (config.commands.hawkuPath) {
+      if (fullArea) {
+        if (forceAspectRatio) {
+          message = `Full area | ${maxWidth}mm | Forced Aspect Ratio`;
+        } else { 
+          message = `Full area | ${width}mm x ${height}mm`;
+         }
+      } else {
+        if (forceAspectRatio) {
+          message = `Width: ${width}mm | Forced Aspect Ratio`;
+        } else {
+          message = `Width: ${width}mm of ${maxWidth}mm, Height: ${height}mm of ${maxHeight}mm`;
+        }
+      }
+      client.say(target, message);
+    }
+
+    if (config.commands.area) {
+      // Send static tablet area message
+      client.say(target, `Tablet area: ${config.commands.area}`);
+    }
+  }
+
+  if (msg === 'areadetails') {
+    if (config.commands.hawkuPath) {
+      const hawkuDetails = hawku.getDetails();
+      if (hawkuDetails.outputMode) {
+        const message = `Full area: ${hawkuDetails.fullArea}, `
+        + `Smoothed Output: ${hawkuDetails.smoothing}, `
+        + `Output Mode: ${hawkuDetails.outputMode}, `
+        + `Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`;
+      client.say(target, message);
+      }
+    }
+  }
+
+  if (msg === 'uptime') {
     // Display stream uptime (fetched from the Twitch API)
     request({
       ...twitchApiOptions,
@@ -117,42 +171,37 @@ const onMessageHandler = (target, context, message, fromSelf) => {
       .catch(console.error);
   }
 
-  if (msg === '!area') {
-    // Send tablet area
-    client.say(target, `Tablet area: ${config.commands.area}`);
-  }
-
-  if (msg === '!tablet') {
+  if (msg === 'tablet') {
     // Send tablet information
     client.say(target, `Tablet: ${config.commands.tablet}`);
   }
 
-  if (msg === '!keyboard') {
+  if (msg === 'keyboard') {
     // Send keyboard information
     client.say(target, `Keyboard: ${config.commands.keyboard}`);
   }
 
-  if (msg === '!grip') {
+  if (msg === 'grip') {
     // Send tablet grip information
     client.say(target, `Tablet pen grip: ${config.commands.grip}`);
   }
 
-  if (msg === '!commands') {
+  if (msg === 'commands') {
     // Send the list of available commands
     client.say(target, `Command list: ${config.commands.commandList}`);
   }
 
-  if (msg === '!discord') {
+  if (msg === 'discord') {
     // Send a Discord server invite
     client.say(target, `Discord: ${config.commands.discord}`);
   }
 
-  if (msg === '!youtube') {
+  if (msg === 'youtube') {
     // Send a YouTube channel link
     client.say(target, `YouTube channel: ${config.commands.youtube}`);
   }
 
-  if (msg === '!followage') {
+  if (msg === 'followage') {
     // Calculate how long the sender has been following the channel
     const fromUser = context['user-id'];
     const fromDisplayName = context['display-name'];

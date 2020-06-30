@@ -14,10 +14,14 @@ module.exports = {
 
   // Path to osu! config file
   osuConfigFilePath: 'CONFIG_PATH', // Removed
+  
+  // Command prefix (eg; !uptime vs ?uptime or .uptime)
+  cmdPrefix: '!',
 
   // Command-specific config info
   commands: {
-    area: 'https://imgur.com/a/coHBAPE',
+    area: null, // Leave null unless you don't use Hawku, or want to manually insert something - eg: 'https://imgur.com/a/coHBAPE'
+    hawkuPath: '/mnt/c/path/to/Hawku/TabletDriverV0.2.3/config/config.xml', // Point this to the config.xml file inside of your hawku directory
     commandList: 'https://travisbartholome.github.io/travisbot/',
     discord: 'https://discord.gg/ppy',
     grip: 'https://imgur.com/a/jjmq6kT',
