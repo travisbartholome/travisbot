@@ -9,7 +9,7 @@ const getFollowage = require('./commands/followage');
 const config = require('../config');
 const cmdPrefix = config.cmdPrefix;
 
-const hawku = require('./commands/hawku.js');
+const hawku = require('./commands/hawku');
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -26,8 +26,13 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     return;
   }
 
-  // Remove whitespace from message
-  const msg = message.trim();
+  // Parses received message to determine if the correct cmdPrefix is being used. 
+  // If so, it continues.
+  if (message.trim()[0] !== cmdPrefix) {
+    return;
+  }
+  const msg = message.trim().slice(1)
+
   const channelName = target.slice(1);
   const channelId = context['room-id'];
 
@@ -40,12 +45,12 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   };
 
   // Parse commands
-  if (msg ===  `${cmdPrefix}` + 'ping') {
+  if (msg === 'ping') {
     // Check to see if the bot is running/connected
     client.say(target, `@${context.username} Pong!`);
   }
 
-  if (msg === `${cmdPrefix}` + 'np' || msg === `${cmdPrefix}` + 'map') {
+  if (msg === 'np' || msg === 'map') {
     // "Now playing" command
     fs.readFile(config.commands.npFile, 'utf8', (err, data) => {
       if (err) {
@@ -57,7 +62,7 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     });
   }
 
-  if (msg === `${cmdPrefix}` + 'skin') {
+  if (msg === 'skin') {
     // Link to my current skin
     const { skin, skinDefaultName } = config.commands;
     const skinConfigPrefix = 'Skin = ';
@@ -93,7 +98,55 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     }
   }
 
-  if (msg === `${cmdPrefix}` + 'uptime') {
+  if (msg === 'area') {
+
+    let message;
+    const hawkuDetails = hawku.getDetails();
+    const tabletArea = hawku.getArea();
+    const {width, height, maxWidth, maxHeight} = tabletArea;
+    const {forceAspectRatio, fullArea} = hawkuDetails;
+    console.log(width,maxWidth,height,maxHeight);
+    console.log(forceAspectRatio,fullArea)
+
+    // message construction logic, assigns message = 'whatever'
+    
+    if (config.commands.hawkuPath) {
+      if (fullArea) {
+        if (forceAspectRatio) {
+          message = `Full area | ${maxWidth}mm | Forced Aspect Ratio`;
+        } else { 
+          message = `Full area | ${width}mm x ${height}mm`;
+         }
+      } else {
+        if (forceAspectRatio) {
+          message = `Width: ${width}mm | Forced Aspect Ratio`;
+        } else {
+          message = `Width: ${width}mm of ${maxWidth}mm, Height: ${height}mm of ${maxHeight}mm`;
+        }
+      }
+      client.say(target, message);
+    }
+
+    if (config.commands.area) {
+      // Send static tablet area message
+      client.say(target, `Tablet area: ${config.commands.area}`);
+    }
+  }
+
+  if (msg === 'areadetails') {
+    if (config.commands.hawkuPath) {
+      const hawkuDetails = hawku.getDetails();
+      if (hawkuDetails.outputMode) {
+        const message = `Full area: ${hawkuDetails.fullArea}, `
+        + `Smoothed Output: ${hawkuDetails.smoothing}, `
+        + `Output Mode: ${hawkuDetails.outputMode}, `
+        + `Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`;
+      client.say(target, message);
+      }
+    }
+  }
+
+  if (msg === 'uptime') {
     // Display stream uptime (fetched from the Twitch API)
     request({
       ...twitchApiOptions,
@@ -119,88 +172,38 @@ const onMessageHandler = (target, context, message, fromSelf) => {
       })
       .catch(console.error);
   }
-  
-  if (msg === `${cmdPrefix}` + 'area') {
-    // a single area command - if the hawkuPath (in config.js) is populated, it runs like normal
-    // if there is an area manually declared, AND the path is populated, it will use the path
-    // if the area is declared, and the path is null, the static area will be used
-    if (config.commands.hawkuPath != null) {
-      const hawkuDetails = hawku.GetDetails();
-      const tabletArea = hawku.GetAreas();
-      const {width, height, maxWidth, maxHeight} = tabletArea;
-      const {forcedAspectRatio, fullArea} = hawkuDetails;
-  
-      let areaMsg = function(width,height,maxwidth,maxheight,aspectratio,fullarea) {
-        if(fullarea == 'true' && aspectratio == 'true') {
-          message = "Full area | " + `${maxwidth}mm` + " | Forced Aspect Ratio";
-          return message;
-        }
-        if(fullarea == 'true' && aspectratio == 'false') {
-          message = "Full area | " + `${width}mm x ${height}mm`
-          return message;
-        }
-        if (fullarea != 'true') {
-          if (aspectratio == 'true') {
-            message = "Width: " + width + "mm | Forced Aspect Ratio"
-            return message;
-          } else {
-            message = `Width: ${width}mm of ${maxwidth}mm, Height: ${height}mm of ${maxheight}mm`;
-            return message;
-          }
-        }
-      }
-  
-      if (config.commands.hawkuPath) {
-        client.say(target, areaMsg(w,h,mw,mh,ar,fullarea))
-      }
-    }
 
-    if (config.commands.area != null) {
-      client.say(target, `Tablet area: ${config.commands.area}`);
-    }
-  }
-
-  if (msg === `${cmdPrefix}` + 'areadetails') {
-    if (config.commands.hawkuPath) {
-      const hawkuDetails = hawku.GetDetails();
-      if (hawkuDetails.outputMode) {
-        let message = `Full area: ${hawkuDetails.fullArea}, Smoothed Output: ${hawkuDetails.smoothing}, Output Mode: ${hawkuDetails.outputMode}, Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`
-        client.say(target, `${message}`);
-      }
-    }
-  }
-
-  if (msg === `${cmdPrefix}` + 'tablet') {
+  if (msg === 'tablet') {
     // Send tablet information
     client.say(target, `Tablet: ${config.commands.tablet}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'keyboard') {
+  if (msg === 'keyboard') {
     // Send keyboard information
     client.say(target, `Keyboard: ${config.commands.keyboard}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'grip') {
+  if (msg === 'grip') {
     // Send tablet grip information
     client.say(target, `Tablet pen grip: ${config.commands.grip}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'commands') {
+  if (msg === 'commands') {
     // Send the list of available commands
     client.say(target, `Command list: ${config.commands.commandList}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'discord') {
+  if (msg === 'discord') {
     // Send a Discord server invite
     client.say(target, `Discord: ${config.commands.discord}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'youtube') {
+  if (msg === 'youtube') {
     // Send a YouTube channel link
     client.say(target, `YouTube channel: ${config.commands.youtube}`);
   }
 
-  if (msg === `${cmdPrefix}` + 'followage') {
+  if (msg === 'followage') {
     // Calculate how long the sender has been following the channel
     const fromUser = context['user-id'];
     const fromDisplayName = context['display-name'];
