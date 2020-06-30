@@ -127,8 +127,8 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     if (config.commands.hawkuPath != null) {
       const hawkuDetails = hawku.GetDetails();
       const tabletArea = hawku.GetAreas();
-      let w = tabletArea.width; let h = tabletArea.height; let mw = tabletArea.maxwidth; let mh = tabletArea.maxheight;
-      let ar = hawkuDetails.forcedAspectRatio; let fullarea = hawkuDetails.fullArea;
+      const {width, height, maxWidth, maxHeight} = tabletArea;
+      const {forcedAspectRatio, fullArea} = hawkuDetails;
   
       let areaMsg = function(width,height,maxwidth,maxheight,aspectratio,fullarea) {
         if(fullarea == 'true' && aspectratio == 'true') {
