@@ -9,8 +9,11 @@ module.exports = {
     ],
   },
 
-  // Twitch API client ID
-  apiClientId: 'API_CLIENT_ID', // Removed for security
+  // Twitch API client information, used for authentication
+  twitchApi: {
+    clientId: 'API_CLIENT_ID', // Removed for security
+    clientSecret: 'API_CLIENT_SECRET', // Removed for security
+  },
 
   // Path to osu! config file
   osuConfigFilePath: 'CONFIG_PATH', // Removed

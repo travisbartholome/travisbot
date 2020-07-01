@@ -1,16 +1,18 @@
 const fs = require('fs');
 const readline = require('readline');
 
+const axios = require('axios').default;
 const tmi = require('tmi.js');
-const request = require('request-promise-native');
 
+const getAppAuthToken = require('./util/getAppAuthToken');
 const getFollowage = require('./commands/followage');
+const hawku = require('./commands/hawku');
 
 const config = require('../config');
 
 const { cmdPrefix } = config;
 
-const hawku = require('./commands/hawku');
+let appAccessToken; // App authentication token for Twitch API
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -40,9 +42,9 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   // Common options for Twitch API calls
   const twitchApiOptions = {
     headers: {
-      'Client-ID': config.apiClientId,
+      Authorization: `Bearer ${appAccessToken}`,
+      'Client-ID': config.twitchApi.clientId,
     },
-    json: true,
   };
 
   // Parse commands
@@ -145,11 +147,11 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 
   if (msg === 'uptime') {
     // Display stream uptime (fetched from the Twitch API)
-    request({
-      ...twitchApiOptions,
-      uri: `https://api.twitch.tv/helix/streams?user_id=${channelId}&first=1`,
-    })
-      .then((result) => {
+    axios.get(
+      `https://api.twitch.tv/helix/streams?user_id=${channelId}&first=1`,
+      twitchApiOptions,
+    )
+      .then(({ data: result }) => {
         // If the user is offline, the Twitch API won't return data for their stream
         if (!result.data || result.data.length === 0) {
           client.say(target, `${channelName} is currently offline!`);
@@ -218,5 +220,9 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
-// Connect to Twitch
-client.connect();
+// Connect client to Twitch once we've gotten an OAuth token for API calls
+getAppAuthToken().then((token) => {
+  appAccessToken = token;
+
+  client.connect();
+});
