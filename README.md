@@ -18,9 +18,11 @@ An example config file, showing the correct structure with sensitive information
 See [this link](https://dev.twitch.tv/docs/irc/) for descriptions of the variables in the `tmiOptions` object.
 The structure of `tmiOptions` should match the config object in the example.
 
-See [this link](https://dev.twitch.tv/docs/api/) for information about the `apiClientId` field,
-as well as how to acquire one of these keys.
+See [this link](https://dev.twitch.tv/docs/api/) for information about the `twitchApi` object,
 This is used to make requests to the Twitch API for things like stream uptime.
+Specifically, you can refer to https://dev.twitch.tv/docs/authentication#registration
+(as of July 1, 2020) for information about generating a client ID and client secret,
+which you'll need to run API-dependent commands.
 
 Run the bot by running `npm start` or `node ./src/index.js` in the repository's root directory.
 
