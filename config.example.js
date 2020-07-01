@@ -14,7 +14,7 @@ module.exports = {
 
   // Path to osu! config file
   osuConfigFilePath: 'CONFIG_PATH', // Removed
-  
+
   // Command prefix (eg; !uptime vs ?uptime or .uptime)
   cmdPrefix: '!',
 

@@ -8,7 +8,7 @@ Since I haven't set up Babel for this (yet) but am still using a good bit of ES6
 you'll need a relatively recent node version to run this bot. (I'd recommend at least
 `node >=8.0.0`, but it should technically work as far back as `node >=6.0.0`).
 
-Side note: [get node 10 LTS here](https://nodejs.org/en/download/).
+Side note: [get node 12 LTS here](https://nodejs.org/en/download/).
 
 ## Running
 
@@ -23,3 +23,10 @@ as well as how to acquire one of these keys.
 This is used to make requests to the Twitch API for things like stream uptime.
 
 Run the bot by running `npm start` or `node ./src/index.js` in the repository's root directory.
+
+## Contributing
+
+I'm happy to take any suggestions for this!
+
+If you want to contribute, read [CONTRIBUTING.md](./CONTRIBUTING.md)
+and submit an issue or pull request with your changes.
