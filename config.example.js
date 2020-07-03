@@ -21,9 +21,6 @@ module.exports = {
   // Command prefix (eg; !uptime vs ?uptime or .uptime)
   cmdPrefix: '!',
 
-  // Command prefix (eg; !uptime vs ?uptime or .uptime)
-  cmdPrefix: '!',
-
   // Command-specific config info
   commands: {
     area: null, // Leave null unless you don't use Hawku, or want to manually insert something - eg: 'https://imgur.com/a/coHBAPE'
