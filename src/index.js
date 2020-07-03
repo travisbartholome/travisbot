@@ -1,15 +1,21 @@
 const fs = require('fs');
 const readline = require('readline');
 
+const axios = require('axios').default;
 const tmi = require('tmi.js');
-const request = require('request-promise-native');
 
+const getAppAuthToken = require('./util/getAppAuthToken');
 const getFollowage = require('./commands/followage');
+const hawku = require('./commands/hawku');
 
 const config = require('../config');
 const cmdPrefix = config.cmdPrefix;
 
 const hawku = require('./commands/hawku');
+
+const { cmdPrefix } = config;
+
+let appAccessToken; // App authentication token for Twitch API
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
@@ -26,22 +32,22 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     return;
   }
 
-  // Parses received message to determine if the correct cmdPrefix is being used. 
-  // If so, it continues.
+  // Parse message to see if the correct command prefix is present
+  // If so, continue
   if (message.trim()[0] !== cmdPrefix) {
     return;
   }
-  const msg = message.trim().slice(1)
 
+  const msg = message.trim().slice(1); // Remove command prefix
   const channelName = target.slice(1);
   const channelId = context['room-id'];
 
   // Common options for Twitch API calls
   const twitchApiOptions = {
     headers: {
-      'Client-ID': config.apiClientId,
+      Authorization: `Bearer ${appAccessToken}`,
+      'Client-ID': config.twitchApi.clientId,
     },
-    json: true,
   };
 
   // Parse commands
@@ -99,34 +105,32 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   }
 
   if (msg === 'area') {
-
-    let message;
+    let areaMsg;
     const hawkuDetails = hawku.getDetails();
     const tabletArea = hawku.getArea();
-    const {width, height, maxWidth, maxHeight} = tabletArea;
-    const {forceAspectRatio, fullArea} = hawkuDetails;
+    const {
+      width, height, maxWidth, maxHeight,
+    } = tabletArea;
+    const { forceAspectRatio, fullArea } = hawkuDetails;
 
-    // message construction logic, assigns message = 'whatever'
-    
+    // Create a message specific to the user's tablet area options
     if (config.commands.hawkuPath) {
       if (fullArea) {
         if (forceAspectRatio) {
-          message = `Full area | ${maxWidth}mm | Forced Aspect Ratio`;
-        } else { 
-          message = `Full area | ${width}mm x ${height}mm`;
-         }
-      } else {
-        if (forceAspectRatio) {
-          message = `Width: ${width}mm | Forced Aspect Ratio`;
+          areaMsg = `Full area | ${maxWidth}mm | Forced Aspect Ratio`;
         } else {
-          message = `Width: ${width}mm of ${maxWidth}mm, Height: ${height}mm of ${maxHeight}mm`;
+          areaMsg = `Full area | ${width}mm x ${height}mm`;
         }
+      } else if (forceAspectRatio) {
+        areaMsg = `Width: ${width}mm | Forced Aspect Ratio`;
+      } else {
+        areaMsg = `Width: ${width}mm of ${maxWidth}mm, Height: ${height}mm of ${maxHeight}mm`;
       }
-      client.say(target, message);
+      client.say(target, areaMsg);
     }
 
+    // Send static tablet area message if one is set in config
     if (config.commands.area) {
-      // Send static tablet area message
       client.say(target, `Tablet area: ${config.commands.area}`);
     }
   }
@@ -135,22 +139,22 @@ const onMessageHandler = (target, context, message, fromSelf) => {
     if (config.commands.hawkuPath) {
       const hawkuDetails = hawku.getDetails();
       if (hawkuDetails.outputMode) {
-        const message = `Full area: ${hawkuDetails.fullArea}, `
+        const areaDetailsMsg = `Full area: ${hawkuDetails.fullArea}, `
         + `Smoothed Output: ${hawkuDetails.smoothing}, `
         + `Output Mode: ${hawkuDetails.outputMode}, `
         + `Resolution: ${hawkuDetails.resolution} | Use ${cmdPrefix}area to see dimensions`;
-      client.say(target, message);
+        client.say(target, areaDetailsMsg);
       }
     }
   }
 
   if (msg === 'uptime') {
     // Display stream uptime (fetched from the Twitch API)
-    request({
-      ...twitchApiOptions,
-      uri: `https://api.twitch.tv/helix/streams?user_id=${channelId}&first=1`,
-    })
-      .then((result) => {
+    axios.get(
+      `https://api.twitch.tv/helix/streams?user_id=${channelId}&first=1`,
+      twitchApiOptions,
+    )
+      .then(({ data: result }) => {
         // If the user is offline, the Twitch API won't return data for their stream
         if (!result.data || result.data.length === 0) {
           client.say(target, `${channelName} is currently offline!`);
@@ -219,5 +223,9 @@ const onMessageHandler = (target, context, message, fromSelf) => {
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
-// Connect to Twitch
-client.connect();
+// Connect client to Twitch once we've gotten an OAuth token for API calls
+getAppAuthToken().then((token) => {
+  appAccessToken = token;
+
+  client.connect();
+});
