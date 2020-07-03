@@ -1,40 +1,54 @@
 const fs = require('fs');
-const config = require('../../config');
-const hawkuConfigFilePath = config.commands.hawkuPath
 const { xml2js } = require('xml-js');
 
-const options = {compact: true, ignoreDeclaration: true, ignoreAttributes: true, nativeTypeAttributes: true};
+const config = require('../../config');
 
-// Ran every time this command is ran, in-case the user changes their configuration
-// This loads the entire file into a JS object after converting it
-const loadConfigFile = () => {
-    return xml2js(
-      fs.readFileSync(hawkuConfigFilePath, 'utf8'), options
-    ).Configuration;
-  }
+const hawkuConfigFilePath = config.commands.hawkuPath;
+
+// Options for xml2js conversion
+const xmlOptions = {
+  compact: true,
+  ignoreAttributes: true,
+  ignoreDeclaration: true,
+  nativeType: true,
+  nativeTypeAttributes: true,
+  textKey: 'text',
+};
+
+// Run every time this command is run, in case the user changes their configuration
+// This loads the entire config file into a JS object after converting it
+const loadConfigFile = () => xml2js(
+  fs.readFileSync(hawkuConfigFilePath, 'utf8'), xmlOptions,
+).Configuration;
 
 module.exports = {
+  /**
+   * Reads the Hawku config file, then returns the width and height for
+   * both the current active area and max active area.
+   */
+  getArea: () => {
+    const settings = loadConfigFile();
 
-    getArea: function() {
-        // This runs the loadConfigFile function, which returns the entire file as a JS object
-        // It then returns the 4 values (current area, and max area) to the caller
-        const settings = loadConfigFile();
-        return { 
-            width: settings.TabletArea.Width._text, 
-            height: settings.TabletArea.Height._text, 
-            maxWidth: settings.TabletFullArea.Width._text, 
-            maxHeight: settings.TabletFullArea.Height._text 
-        };
-    },
+    return {
+      width: settings.TabletArea.Width.text,
+      height: settings.TabletArea.Height.text,
+      maxWidth: settings.TabletFullArea.Width.text,
+      maxHeight: settings.TabletFullArea.Height.text,
+    };
+  },
 
-    getDetails: () => {
-        const settings = loadConfigFile();
-        return { 
-            forcedAspectRatio: settings.ForceAspectRatio._text === 'true', 
-            fullArea: settings.ForceFullArea._text === 'true', 
-            smoothing: settings.SmoothingEnabled._text,
-            outputMode: settings.OutputMode._text,
-            resolution: `${settings.ScreenArea.Width._text}x${settings.ScreenArea.Height._text}`
-        }
-    }
+  /**
+   * Gets detailed settings from the Hawku config file.
+   */
+  getDetails: () => {
+    const settings = loadConfigFile();
+
+    return {
+      forcedAspectRatio: settings.ForceAspectRatio.text,
+      fullArea: settings.ForceFullArea.text,
+      smoothing: settings.SmoothingEnabled.text,
+      outputMode: settings.OutputMode.text,
+      resolution: `${settings.ScreenArea.Width.text}x${settings.ScreenArea.Height.text}`,
+    };
+  },
 };
