@@ -21,6 +21,13 @@ const loadConfigFile = () => xml2js(
   fs.readFileSync(hawkuConfigFilePath, 'utf8'), xmlOptions,
 ).Configuration;
 
+// takes a number, such as 54.24324839024832, and truncates it to 54.24 - it does NOT round it up, simply truncates it.
+truncate = function(number, places) {
+  var shift = Math.pow(10, places);
+
+  return ((number * shift) | 0) / shift;
+};
+
 module.exports = {
   /**
    * Reads the Hawku config file, then returns the width and height for
@@ -30,10 +37,10 @@ module.exports = {
     const settings = loadConfigFile();
 
     return {
-      width: settings.TabletArea.Width.text,
-      height: settings.TabletArea.Height.text,
-      maxWidth: settings.TabletFullArea.Width.text,
-      maxHeight: settings.TabletFullArea.Height.text,
+      width: truncate(settings.TabletArea.Width.text,2),
+      height: truncate(settings.TabletArea.Height.text,2),
+      maxWidth: truncate(settings.TabletFullArea.Width.text,2),
+      maxHeight: truncate(settings.TabletFullArea.Height.text,2),
     };
   },
 

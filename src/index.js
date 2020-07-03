@@ -9,11 +9,10 @@ const getFollowage = require('./commands/followage');
 const hawku = require('./commands/hawku');
 
 const config = require('../config');
-const cmdPrefix = config.cmdPrefix;
-
-const hawku = require('./commands/hawku');
+const commandStatus = require('./commands')
 
 const { cmdPrefix } = config;
+const { cmdEnabled } = commandStatus;
 
 let appAccessToken; // App authentication token for Twitch API
 
@@ -41,6 +40,11 @@ const onMessageHandler = (target, context, message, fromSelf) => {
   const msg = message.trim().slice(1); // Remove command prefix
   const channelName = target.slice(1);
   const channelId = context['room-id'];
+
+  // checks if the command is enabled in commands.js
+  if(! cmdEnabled[msg]) {
+    return;
+  }
 
   // Common options for Twitch API calls
   const twitchApiOptions = {
