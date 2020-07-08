@@ -1,7 +1,9 @@
 const fs = require('fs');
+const path = require('path');
 const readline = require('readline');
 
 const axios = require('axios').default;
+const express = require('express');
 const tmi = require('tmi.js');
 
 const getAppAuthToken = require('./util/getAppAuthToken');
@@ -16,6 +18,9 @@ let appAccessToken; // App authentication token for Twitch API
 
 // Create client
 const client = new tmi.Client(config.tmiOptions);
+
+// Create express server
+const app = express();
 
 // Define handler for the 'connected' event
 const onConnectedHandler = (address, port) => {
@@ -225,4 +230,23 @@ getAppAuthToken().then((token) => {
   appAccessToken = token;
 
   client.connect();
+});
+
+// ~~~~~~~~~~
+
+// Set up webserver
+
+// Config
+const EXPRESS_PORT = process.env.PORT || 3000;
+app.set('views', path.resolve(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.use('/static', express.static(path.resolve(__dirname, 'static')));
+
+// Routes
+app.get('/livepp', (req, res) => {
+  res.render('livepp');
+});
+
+app.listen(EXPRESS_PORT, () => {
+  console.log('express server listening');
 });
