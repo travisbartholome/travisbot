@@ -7,5 +7,16 @@
 }
 
 .pp-digit {
+  color: #ffffff;
   font-size: 64px;
+  font-family: "Century Gothic Bold", "Century Gothic", sans-serif;
+  font-weight: bold;
+  
+  /* Text outline */
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000,
+    -2px 2px 0 #000, 2px 2px 0 #000;
+}
+
+body {
+  background: rgba(0, 0, 0, 0);
 }
