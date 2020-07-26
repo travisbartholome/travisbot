@@ -1,0 +1,11 @@
+#pp-counter-container {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.pp-digit {
+  font-size: 64px;
+}
