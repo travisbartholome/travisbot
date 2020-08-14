@@ -8,21 +8,24 @@ let ppCounterContainer;
 let ppCurrent;
 let ppDisplayArray = [];
 
+const PP_COUNTER_UPDATE_INTERVAL = 500;
+
 const IN_ANIMATION_PROPS = {
-  duration: 100,
-  delay: (el, idx) => (el.parentNode.children.length - idx - 1) * 50,
+  duration: 50,
+  // Could use this delay function to get a "propagation" effect for the animation
+  // delay: (el, idx) => (el.parentNode.children.length - idx - 1) * 50,
   easing: 'easeInOutQuad',
   opacity: [0, 1],
-  targets: '.pp-digit',
+  targets: '.pp-digit-animate-in',
   translateY: ['50%', '0%'],
 };
 
 const OUT_ANIMATION_PROPS = {
-  delay: (el, idx) => (el.parentNode.children.length - idx - 1) * 50,
-  duration: 100,
+  // delay: (el, idx) => (el.parentNode.children.length - idx - 1) * 50,
+  duration: 50,
   easing: 'easeInOutQuad',
   opacity: 0,
-  targets: '.pp-digit',
+  targets: '.pp-digit-animate-out',
   translateY: '-50%',
 };
 
@@ -44,11 +47,21 @@ function updatePPValue() {
   }
   // Note length of both arrays should now be equal
 
-  // Put each digit in a span
+  // Put each digit in a span, add animation target classes
   const newHTML = ppDisplayNewArray.reduce(
-    (html, currentDigit) => (
-      `${html}<span class="pp-digit">${currentDigit}</span>`
-    ),
+    (html, currentDigit, currentIndex) => {
+      let className = 'pp-digit';
+      if (currentDigit !== ppDisplayArray[currentIndex]) {
+        className += ' pp-digit-animate-in';
+
+        // Apply out animation class to the span currently on the page
+        const digitOnPage = ppCounterContainer.children[currentIndex];
+        if (digitOnPage) {
+          digitOnPage.classList.add('pp-digit-animate-out');
+        }
+      }
+      return `${html}<span class="${className}">${currentDigit}</span>`;
+    },
     '',
   );
 
@@ -71,7 +84,7 @@ function startWebSocket() {
   const ws = new WebSocket(fullPath);
 
   ws.onopen = () => {
-    setInterval(updatePPValue, 3000); // TODO: set to 1000 once done testing (1 second)
+    setInterval(updatePPValue, PP_COUNTER_UPDATE_INTERVAL);
   };
 
   ws.onmessage = (event) => {
