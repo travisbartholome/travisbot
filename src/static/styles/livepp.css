@@ -1,12 +1,7 @@
-#pp-counter-container {
-  align-content: center;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
+body {
+  background: rgba(0, 0, 0, 0);
 
-.pp-digit {
+  /* Test styles */
   color: #ffffff;
   font-size: 64px;
   font-family: "Century Gothic Bold", "Century Gothic", sans-serif;
@@ -17,6 +12,16 @@
     -2px 2px 0 #000, 2px 2px 0 #000;
 }
 
-body {
-  background: rgba(0, 0, 0, 0);
+#pp-counter-container {
+  align-content: center;
+  align-items: center;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.right-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }

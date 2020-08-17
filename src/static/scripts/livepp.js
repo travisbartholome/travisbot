@@ -23,7 +23,7 @@ const IN_ANIMATION_PROPS = {
 const OUT_ANIMATION_PROPS = {
   // delay: (el, idx) => (el.parentNode.children.length - idx - 1) * 50,
   duration: 50,
-  easing: 'easeInOutQuad',
+  easing: 'easeInExpo',
   opacity: 0,
   targets: '.pp-digit-animate-out',
   translateY: '-50%',
@@ -48,7 +48,7 @@ function updatePPValue() {
   // Note length of both arrays should now be equal
 
   // Put each digit in a span, add animation target classes
-  const newHTML = ppDisplayNewArray.reduce(
+  let newHTML = ppDisplayNewArray.reduce(
     (html, currentDigit, currentIndex) => {
       let className = 'pp-digit';
       if (currentDigit !== ppDisplayArray[currentIndex]) {
@@ -65,9 +65,12 @@ function updatePPValue() {
     '',
   );
 
+  // Add 'pp' to the end of the counter if it's non-empty
+  if (ppDisplayNewArray.some((digit) => digit !== '')) {
+    newHTML += '<span>pp</span>';
+  }
+
   // TODO: fix linter (not quite sure what the best strategy is here)
-  // TODO: debug weird thing where if the browser window loses focus,
-  //    the animation gets messed up
   // Animate rolling digits
   anime({
     ...OUT_ANIMATION_PROPS,
@@ -83,8 +86,10 @@ function updatePPValue() {
 function startWebSocket() {
   const ws = new WebSocket(fullPath);
 
+  let updateInterval;
+
   ws.onopen = () => {
-    setInterval(updatePPValue, PP_COUNTER_UPDATE_INTERVAL);
+    updateInterval = setInterval(updatePPValue, PP_COUNTER_UPDATE_INTERVAL);
   };
 
   ws.onmessage = (event) => {
@@ -94,6 +99,7 @@ function startWebSocket() {
   };
 
   ws.onclose = () => {
+    clearInterval(updateInterval);
     setTimeout(startWebSocket, 1000);
   };
 }
